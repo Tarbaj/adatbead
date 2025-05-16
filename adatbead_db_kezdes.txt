@@ -1,0 +1,59 @@
+CALL apoc.load.json("https://raw.githubusercontent.com/Tarbaj/adatbead/refs/heads/main/Szallashely.json") YIELD value
+CREATE (:Szallashely {
+  id: toInteger(value.SZALLAS_ID),
+  nev: value.SZALLAS_NEV,
+  hely: value.HELY,
+  csillagok_szama: toInteger(value.CSILLAGOK_SZAMA),
+  tipus: value.TIPUS,
+  rogzitette: value.ROGZITETTE,
+  rogz_ido: date(substring(value.ROGZ_IDO, 0, 10)),
+  cim: value.CIM
+});
+
+
+CALL apoc.load.json("https://raw.githubusercontent.com/Tarbaj/adatbead/refs/heads/main/Szoba.json") YIELD value
+CREATE (:Szoba {
+  id: toInteger(value.SZOBA_ID),
+  szoba_szama: value.SZOBA_SZAMA,
+  ferohely: toInteger(value.FEROHELY),
+  potagy: toInteger(value.POTAGY),
+  klimas: value.KLIMAS
+});
+
+
+CALL apoc.load.json("https://raw.githubusercontent.com/Tarbaj/adatbead/refs/heads/main/Szoba.json") YIELD value
+MATCH (szallas:Szallashely {id: toInteger(value.SZALLAS_FK)})
+MATCH (szoba:Szoba {id: toInteger(value.SZOBA_ID)})
+MERGE (szallas)-[:TARTALMAZ]->(szoba);
+
+
+CALL apoc.load.json("https://raw.githubusercontent.com/Tarbaj/adatbead/refs/heads/main/Vendeg.json") YIELD value
+CREATE (:Vendeg {
+  usernev: value.USERNEV,
+  nev: value.NEV,
+  email: value.EMAIL,
+  szaml_cim: value.SZAML_CIM,
+  szul_dat: date(substring(value.SZUL_DAT, 0, 10))
+});
+
+
+CALL apoc.load.json("https://raw.githubusercontent.com/Tarbaj/adatbead/refs/heads/main/Foglalas.json") YIELD value
+CREATE (:Foglalas {
+  id: toInteger(value.FOGLALAS_PK),
+  mettol: date(substring(value.METTOL, 0, 10)),
+  meddig: date(substring(value.MEDDIG, 0, 10)),
+  felnott_szam: toInteger(value.FELNOTT_SZAM),
+  gyermek_szam: toInteger(value.GYERMEK_SZAM)
+});
+
+
+CALL apoc.load.json("https://raw.githubusercontent.com/Tarbaj/adatbead/refs/heads/main/Foglalas.json") YIELD value
+MATCH (f:Foglalas {id: toInteger(value.FOGLALAS_PK)})
+MATCH (szoba:Szoba {id: toInteger(value.SZOBA_FK)})
+MERGE (f)-[:FOGLALJA]->(szoba);
+
+
+CALL apoc.load.json("https://raw.githubusercontent.com/Tarbaj/adatbead/refs/heads/main/Foglalas.json") YIELD value
+MATCH (f:Foglalas {id: toInteger(value.FOGLALAS_PK)})
+MATCH (v:Vendeg {usernev: value.UGYFEL_FK})
+MERGE (v)-[:FOGLALT]->(f);
