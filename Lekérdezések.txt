@@ -1,0 +1,50 @@
+//Foglalások felnőtt és gyermek megoszlása
+MATCH (f:Foglalas)
+RETURN SUM(f.felnott_szam) AS OsszFelnott, SUM(f.gyermek_szam) AS OsszGyermek;
+
+// Foglalás – Szoba – Szálláshely láncolat
+MATCH (f:Foglalas)-[:FOGLALJA]->(sz:Szoba)<-[:TARTALMAZ]-(s:Szallashely)
+RETURN f.id AS FoglalasID, sz.szoba_szama AS SzobaSzam, s.nev AS SzallasNev;
+
+// Melyik vendég hány foglalást készített
+MATCH (v:Vendeg)-[:FOGLALT]->(f:Foglalas)
+RETURN v.nev AS VendegNev, COUNT(f) AS FoglalasokSzama
+ORDER BY FoglalasokSzama DESC;
+
+// Szobák férőhely szerint növekvő sorrendben
+MATCH (sz:Szoba)
+RETURN sz.szoba_szama AS SzobaSzam, sz.ferohely, sz.potagy, sz.klimas
+ORDER BY sz.ferohely ASC;
+
+// Szálláshelyek listázása a szobák számával
+MATCH (s:Szallashely)-[:TARTALMAZ]->(sz:Szoba)
+RETURN s.nev AS SzallasNev, COUNT(sz) AS SzobakSzama
+ORDER BY SzobakSzama DESC;
+
+// Melyik szoba melyik vendég által lett foglalva, és mikor
+MATCH (v:Vendeg)-[:FOGLALT]->(f:Foglalas)-[:FOGLALJA]->(sz:Szoba)
+RETURN v.nev AS Vendeg, sz.szoba_szama AS SzobaSzam, f.mettol, f.meddig
+ORDER BY f.mettol;
+
+// Szálláshelyek típus szerinti megoszlása
+MATCH (s:Szallashely)
+RETURN s.tipus AS Tipus, COUNT(*) AS Darab
+ORDER BY Darab DESC;
+
+// TOP 5 vendék, aki a legtöbbet foglalt
+MATCH (v:Vendeg)-[:FOGLALT]->(f:Foglalas)
+WITH v, COUNT(f) AS FoglalasDb
+RETURN v.nev, v.email, FoglalasDb
+ORDER BY FoglalasDb DESC
+LIMIT 5;
+
+// Melyik szálláshelyhez tartozik a legtöbb férőhely összesen?
+MATCH (s:Szallashely)-[:TARTALMAZ]->(sz:Szoba)
+RETURN s.nev AS SzallasNev, SUM(sz.ferohely + sz.potagy) AS OsszFerohely
+ORDER BY OsszFerohely DESC
+LIMIT 1;
+
+// Egy adott szálláshelyhez tartozó szobák adatai
+MATCH (sz:Szallashely)-[:TARTALMAZ]->(szoba:Szoba)
+WHERE sz.nev = "Sába-Ház"
+RETURN szoba.szoba_szama AS SzobaSzám, szoba.ferohely, szoba.potagy, szoba.klimas
