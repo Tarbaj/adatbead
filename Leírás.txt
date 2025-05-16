@@ -1,0 +1,77 @@
+A Szálláshely relációs adatbázis 4 táblából áll: SZALLASHELY, SZOBA, FOGLALAS, VENDEG
+
+SZALLASHELY tábla:
+SZALLAS_ID: Szálláshely azonosítója, elsődleges kulcs, numerikus, nem üres
+SZALLAS_NEV: Szálláshely neve, szöveg, nem üres
+HELY: Szálláshely elhelyezkedése város szerint, szöveg
+CSILLAGOK_SZAMA: Szálláshely érékelése csillagokkal, numerikus
+TIPUS: Szálláshely típusa, szöveg
+ROGZITETTE: Rögzítő személy neve, szöveg, nem üres
+ROGZ_IDO: Rögzítés dátuma, dátum, nem üres
+CIM: Szálláshely címe, szöveg
+
+SZOBA tábla:
+SZOBA_ID: Szoba azonosítója, elsődleges kulcs, numerikus, nem üres
+SZALLAS_FK: Szálláshely idegen kulcsa, numerikus
+SZOBA_SZAMA: Szoba száma, numerikus, nem üres
+FEROHELY: Férőhelyek száma, numerikus, nem üres
+POTAGY: Pótágyas férőhelyek száma, numerikus
+KLIMAS: Klímás-e a szoba, szöveg
+
+FOGLALAS tábla:
+FOGLALAS_PK: Foglalás azonosítója, elsődleges kulcs, numerikus, nem üres
+SZOBA_FK: Szoba idegen kulcsa, numerikus, nem üres
+UGYFEL_FK: Vendég idegen kulcsa, szöveg, nem üres
+METTOL: Foglalás kezdetének dátuma, dátum, nem üres
+MEDDIG: Foglalás végének dátuma, dátum, nem üres
+FELNOTT_SZAM: Felnőttek száma, numerikus, nem üres
+GYERMEK_SZAM: Gyermekek száma, numerikus, nem üres
+
+VENDEG tábla:
+USERNEV: Vendég felhasználóneve, elsődleges kulcs, szöveg
+NEV: Vendég neve, szöveg, nem üres
+EMAIL: Vendég email címe, szöveg, nem üres
+SZAML_CIM: Vendég számlázási címe, szöveg
+SZUL_DAT: Vendég születési dátuma, dátum
+
+
+Nem relációs, gráf neo4j adatbázis nodejai: Szallashely, Foglalas, Szoba, Vendeg
+
+Szallashely node:
+cim: Szálláshely címe, szöveg
+csillagok_szama: Szálláshely érékelése csillagokkal, numerikus
+hely: Szálláshely elhelyezkedése város szerint, szöveg
+id: Szálláshely azonosítója, elsődleges kulcs, numerikus, nem üres
+nev: Szálláshely neve, szöveg, nem üres
+rogz_ido: Rögzítés dátuma, dátum, nem üres
+rogzitette: Rögzítő személy neve, szöveg, nem üres
+tipus: Szálláshely típusa, szöveg
+
+Foglalas node:
+felnott_szam: Felnőttek száma, numerikus, nem üres
+gyermek_szam: Gyermekek száma, numerikus, nem üres
+id: Foglalás azonosítója, elsődleges kulcs, numerikus, nem üres
+meddig: Foglalás végének dátuma, dátum, nem üres
+mettol: Foglalás kezdetének dátuma, dátum, nem üres
+
+Szoba node:
+ferohely: Férőhelyek száma, numerikus, nem üres
+id: Szoba azonosítója, elsődleges kulcs, numerikus, nem üres
+klimas: Klímás-e a szoba, szöveg
+potagy: Pótágyas férőhelyek száma, numerikus
+szoba_szama: Szoba száma, numerikus, nem üres
+
+Vendeg node:
+email: Vendég email címe, szöveg, nem üres
+nev: Vendég neve, szöveg, nem üres
+szaml_cim: Vendég számlázási címe, szöveg
+szul_dat: Vendég születési dátuma, dátum
+usernev: Vendég felhasználóneve, elsődleges kulcs, szöveg
+
+Kapcsolatai:
+
+(sza:Szallashely)-[:TARTALMAZZA]->(szo:Szoba)
+
+(f:Foglalas)-[:FOGLALJA]->(sz:Szoba)
+
+(v:Vendeg)-[:FOGLALT]->(f:Foglalas)
